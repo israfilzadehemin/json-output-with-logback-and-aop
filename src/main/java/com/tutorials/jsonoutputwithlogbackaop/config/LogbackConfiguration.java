@@ -7,13 +7,16 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class LogbackConfiguration {
+    ObjectMapper objectMapper;
 
-    public LogbackConfiguration() {
+    public LogbackConfiguration(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
         configureLogging();
     }
 
@@ -29,7 +32,7 @@ public class LogbackConfiguration {
         consoleAppender.setContext(loggerContext);
 
         // Customize log format using a custom encoder
-        LayoutWrappingEncoder<ILoggingEvent> encoder = new CustomLogEncoder();
+        LayoutWrappingEncoder<ILoggingEvent> encoder = new CustomLogEncoder(objectMapper);
         encoder.setContext(loggerContext);
         encoder.start();
         consoleAppender.setEncoder(encoder);

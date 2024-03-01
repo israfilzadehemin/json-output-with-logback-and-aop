@@ -17,13 +17,9 @@ public record LogDetails(
         return new LogDetails("START", className, methodName, details, null);
     }
 
-    /**
-     * only <code>threadId</code> is logged here in order to track process and avoid using unnecessary log repetition
-     */
-    public static LogDetails ofEnd(String className, String methodName, Map<String, Object> details, Object result) {
-        HashMap<String, Object> responseDetails = new HashMap<>();
 
-        responseDetails.put("threadId", details.get("threadId"));
+    public static LogDetails ofEnd(String className, String methodName, Object result) {
+        HashMap<String, Object> responseDetails = new HashMap<>();
         return new LogDetails("END", className, methodName, responseDetails, result);
     }
 

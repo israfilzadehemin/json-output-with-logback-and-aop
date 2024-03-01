@@ -3,26 +3,35 @@ package com.tutorials.jsonoutputwithlogbackaop.config;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tutorials.jsonoutputwithlogbackaop.model.LogOutput;
+import io.opentelemetry.api.trace.Span;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.experimental.FieldDefaults;
 
-import java.text.SimpleDateFormat;
-
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomLogEncoder extends LayoutWrappingEncoder<ILoggingEvent> {
-    ObjectMapper om = new ObjectMapper();
+    ObjectMapper objectMapper;
 
     @SneakyThrows
     @Override
     public byte[] encode(ILoggingEvent event) {
-        om.registerModule(new JavaTimeModule());
-        om.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
+        try {
 
-        LogOutput logOutput = new LogOutput(
-                event.getInstant(), event.getLoggerName(), event.getThreadName(),
-                event.getLevel(), event.getMessage(), event.getArgumentArray());
+            var spanContext = Span.current().getSpanContext();
 
-        return "%s%s".formatted(om.writeValueAsString(logOutput), "\n").getBytes();
+            var logOutput = new LogOutput(
+                    event.getInstant(), event.getLoggerName(), event.getThreadName(),
+                    spanContext.getTraceId(), spanContext.getSpanId(),
+                    event.getLevel(), event.getMessage(), event.getArgumentArray());
+
+            return "%s%s" .formatted(objectMapper.writeValueAsString(logOutput), "\n").getBytes();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return null;
+        }
     }
 
 

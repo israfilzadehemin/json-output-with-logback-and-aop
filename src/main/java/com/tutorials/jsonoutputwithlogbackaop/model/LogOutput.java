@@ -11,6 +11,8 @@ public record LogOutput(
         @JsonProperty("timestamp") Instant timestamp,
         @JsonProperty("loggerName") String loggerName,
         @JsonProperty("threadName") String threadName,
+        @JsonProperty("traceId") String traceId,
+        @JsonProperty("spanId") String spanId,
         @JsonProperty("level") Level level,
         @JsonProperty("message") String message,
         @JsonProperty("logDetails") Object logDetails) {

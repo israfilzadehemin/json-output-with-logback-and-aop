@@ -50,7 +50,7 @@ public class LoggingAOP {
         var parameters = getParameters(joinPoint);
 
         log.info("{}", LogDetails.ofEnd(methodSignature.getDeclaringType().getSimpleName(),
-                methodSignature.getMethod().getName(), parameters, output));
+                methodSignature.getMethod().getName(), output));
     }
 
     private Map<String, Object> getParameters(JoinPoint joinPoint) {
